@@ -1,3 +1,14 @@
+build/
+bin/
+.settings/
+.gradle/
+.classpath
+.project
+*.class
+*~
+*.bak
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
