@@ -1,3 +1,13 @@
 plugins {
 	id "java"
 }
+
+repositories {
+	flatDir{
+		dirs "lib"
+	}
+}
+
+dependencies {
+	compile ":spigot:1.12"
+}
