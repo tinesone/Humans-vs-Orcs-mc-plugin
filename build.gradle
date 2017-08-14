@@ -3,13 +3,17 @@ plugins {
 }
 
 repositories {
-	flatDir{
-		dirs "lib"
-	}
+	maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+   	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+	jcenter();
 }
 
 dependencies {
-	compile ":spigot:1.12"
+	compile 'org.spigotmc:spigot-api:1.12.1-R0.1-SNAPSHOT'
+}
+
+jar {
+	archiveName 'HvO.jar'
 }
 
 task deploy (dependsOn:jar,type:Copy){
