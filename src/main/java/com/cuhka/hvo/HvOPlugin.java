@@ -17,7 +17,6 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		System.out.println("Enabled HvO");
 		getServer().getPluginManager().registerEvents(this, this);
 		Scoreboard board = getServer().getScoreboardManager().getMainScoreboard();
 		createTeam(board, "Orcs", ChatColor.DARK_RED, DARK_RED);
