@@ -16,6 +16,8 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import com.google.common.base.Predicates;
+
 public class StartGame implements CommandExecutor {
 	private Scoreboard board;
 	private Server server;
@@ -54,7 +56,14 @@ public class StartGame implements CommandExecutor {
 			team1 = humans;
 			team2 = orcs;
 		}
-		List<String> entries = new ArrayList<>(board.getEntries());
+		
+		// Collect all player entities from the board
+		List<String> entries = board.getEntries().stream()
+			.map(server::getPlayer)
+			.filter(Predicates.notNull())
+			.map(Player::getName)
+			.collect(Collectors.toCollection(ArrayList::new));
+		
 		int half = entries.size() / 2;
 
 		for (int c = 0; c < half; c++) {
