@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,8 +20,10 @@ import net.md_5.bungee.api.ChatColor;
 
 public class StartGame implements CommandExecutor {
 	private Scoreboard board;
-
-	public StartGame(Scoreboard board){
+	private Server server;
+	
+	public StartGame(Server server, Scoreboard board){
+		this.server = server;
 		this.board = board;
 	}
 
@@ -72,7 +74,7 @@ public class StartGame implements CommandExecutor {
 		String message = String.format("%sTeam %s: %s", color, team.getName(),
 					team.getEntries().stream()
 							 .collect(Collectors.joining(", ")));
-		Bukkit.broadcastMessage(message);
+		server.broadcastMessage(message);
 	}
 }
 

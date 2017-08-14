@@ -1,6 +1,7 @@
 package com.cuhka.hvo;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +21,8 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		getServer().getPluginManager().registerEvents(this, this);
+		Server server = getServer();
+		server.getPluginManager().registerEvents(this, this);
 		Scoreboard board = getServer().getScoreboardManager().getMainScoreboard();
 		createTeam(board, TEAM_ORCS, ChatColor.DARK_RED, DARK_RED);
 		createTeam(board, TEAM_HUMANS, ChatColor.AQUA, AQUA);
@@ -31,7 +33,7 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		killCount.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		killCount.setDisplayName("Kills");
 		
-		this.getCommand("start").setExecutor(new StartGame(board));
+		this.getCommand("start").setExecutor(new StartGame(server, board));
 		super.onEnable();
 	}
 
