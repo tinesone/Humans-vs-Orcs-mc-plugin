@@ -1,3 +1,7 @@
-name: HumansvsOrcs
+name: HvO
 main: com.cuhka.hvo.HvOPlugin
 version: 0.1
+commands:
+    start:
+        description: Starts Humans VS Orcs!
+        usasge: /start

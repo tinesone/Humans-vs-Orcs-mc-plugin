@@ -12,8 +12,9 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class HvOPlugin extends JavaPlugin implements Listener {
-	private static final String AQUA = "\u00a74";
-	private static final String DARK_RED = "\u00a7b";
+	static final String KILLCOUNT = "killCount";
+	private static final String AQUA = "\u00a7b";
+	private static final String DARK_RED = "\u00a74";
 
 	@Override
 	public void onEnable() {
@@ -21,10 +22,14 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		Scoreboard board = getServer().getScoreboardManager().getMainScoreboard();
 		createTeam(board, "Orcs", ChatColor.DARK_RED, DARK_RED);
 		createTeam(board, "Humans", ChatColor.AQUA, AQUA);
-	
-		Objective killCount = board.registerNewObjective("killCount", "playerKillCount");
+		Objective killCount = board.getObjective(KILLCOUNT);
+		if (killCount == null){
+			killCount = board.registerNewObjective(KILLCOUNT, "playerKillCount");
+		}	
 		killCount.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		killCount.setDisplayName("Kills");
+		
+		this.getCommand("start").setExecutor(new StartGame(board));
 		super.onEnable();
 	}
 
