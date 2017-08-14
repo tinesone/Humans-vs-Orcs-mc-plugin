@@ -24,24 +24,33 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		Server server = getServer();
 		server.getPluginManager().registerEvents(this, this);
 		Scoreboard board = getServer().getScoreboardManager().getMainScoreboard();
+		
 		createTeam(board, TEAM_ORCS, ChatColor.DARK_RED, DARK_RED);
 		createTeam(board, TEAM_HUMANS, ChatColor.AQUA, AQUA);
-		Objective killCount = board.getObjective(KILLCOUNT);
-		if (killCount == null){
-			killCount = board.registerNewObjective(KILLCOUNT, "playerKillCount");
-		}	
-		killCount.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		killCount.setDisplayName("Kills");
-		
+		createKillCountObjective(board);
+
 		this.getCommand("start").setExecutor(new StartGame(server, board));
 		super.onEnable();
 	}
 
+	private void createKillCountObjective(Scoreboard board) {
+		Objective killCount = board.getObjective(KILLCOUNT);
+		
+		if (killCount == null){
+			killCount = board.registerNewObjective(KILLCOUNT, "playerKillCount");
+		}	
+		
+		killCount.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		killCount.setDisplayName("Kills");
+	}
+
 	private Team createTeam(Scoreboard board, String name, ChatColor color, String prefix) {
 		Team team = board.getTeam(name);
+		
 		if (team == null){
 			team = board.registerNewTeam(name);
 		}
+		
 		team.setAllowFriendlyFire(false);
 		team.setColor(color);
 		team.setPrefix(prefix);
