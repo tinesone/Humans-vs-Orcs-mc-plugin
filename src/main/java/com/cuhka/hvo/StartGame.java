@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class StartGame implements CommandExecutor {
 	private Scoreboard board;
@@ -58,6 +62,12 @@ public class StartGame implements CommandExecutor {
 		for (String entry:entries){
 			team2.addEntry(entry);
 		}
+		String message = String.format("%sTeam %s: %s", ChatColor.AQUA, human.getName(),
+				human.getEntries().stream().collect(Collectors.joining(", ")));
+		Bukkit.broadcastMessage(message);
+		message = String.format("%sTeam %s: %s", ChatColor.DARK_RED, orc.getName(),
+				orc.getEntries().stream().collect(Collectors.joining(", ")));
+		Bukkit.broadcastMessage(message);
 	}
 }
 
