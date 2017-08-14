@@ -16,8 +16,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import net.md_5.bungee.api.ChatColor;
-
 public class StartGame implements CommandExecutor {
 	private Scoreboard board;
 	private Server server;
