@@ -16,8 +16,6 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 	static final String TEAM_HUMANS = "Humans";
 	static final String TEAM_ORCS = "Orcs";
 	static final String KILLCOUNT = "killCount";
-	private static final String AQUA = "\u00a7b";
-	private static final String DARK_RED = "\u00a74";
 
 	@Override
 	public void onEnable() {
@@ -25,8 +23,8 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		server.getPluginManager().registerEvents(this, this);
 		Scoreboard board = getServer().getScoreboardManager().getMainScoreboard();
 		
-		createTeam(board, TEAM_ORCS, ChatColor.DARK_RED, DARK_RED);
-		createTeam(board, TEAM_HUMANS, ChatColor.AQUA, AQUA);
+		createTeam(board, TEAM_ORCS, ChatColor.DARK_RED);
+		createTeam(board, TEAM_HUMANS, ChatColor.AQUA);
 		createKillCountObjective(board);
 
 		this.getCommand("start").setExecutor(new StartGame(server, board));
@@ -44,7 +42,7 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		killCount.setDisplayName("Kills");
 	}
 
-	private Team createTeam(Scoreboard board, String name, ChatColor color, String prefix) {
+	private Team createTeam(Scoreboard board, String name, ChatColor color) {
 		Team team = board.getTeam(name);
 		
 		if (team == null){
@@ -53,7 +51,7 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		
 		team.setAllowFriendlyFire(false);
 		team.setColor(color);
-		team.setPrefix(prefix);
+		team.setPrefix(color.toString());
 		team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
 		team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
 		return team;
@@ -64,7 +62,5 @@ public class HvOPlugin extends JavaPlugin implements Listener {
 		Player victim = e.getEntity();
 		Player killer = victim.getKiller();		
 	}
-	
-
 	
 }

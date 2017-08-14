@@ -42,19 +42,19 @@ public class StartGame implements CommandExecutor {
 		return false;
 	}
 	private void populateTeams() {
-		Team orc = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_ORCS), "Orc team missing");
-		Team human = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_HUMANS), "Humans team missing");
+		Team orcs = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_ORCS), "Orc team missing");
+		Team humans = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_HUMANS), "Humans team missing");
 		Random random = new Random();
 
 		Team team1;
 		Team team2;
 
 		if (random.nextBoolean()) {
-			team1 = orc;
-			team2 = human;
+			team1 = orcs;
+			team2 = humans;
 		} else {
-			team1 = human;
-			team2 = orc;
+			team1 = humans;
+			team2 = orcs;
 		}
 		List<String> entries = new ArrayList<>(board.getEntries());
 		int half = entries.size() / 2;
@@ -66,12 +66,12 @@ public class StartGame implements CommandExecutor {
 		}
 
 		entries.forEach(team2::addEntry);
-		broadcastTeam(ChatColor.AQUA, human);
-		broadcastTeam(ChatColor.DARK_RED, orc);
+		broadcastTeam(humans);
+		broadcastTeam(orcs);
 	}
 
-	private void broadcastTeam(ChatColor color, Team team) {
-		String message = String.format("%sTeam %s: %s", color, team.getName(),
+	private void broadcastTeam(Team team) {
+		String message = String.format("%sTeam %s: %s", team.getColor(), team.getName(),
 					team.getEntries().stream()
 							 .collect(Collectors.joining(", ")));
 		server.broadcastMessage(message);
