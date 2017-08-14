@@ -28,16 +28,20 @@ public class StartGame implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player){
-			Objective killCount = board.getObjective(HvOPlugin.KILLCOUNT);
-
-			board.getEntries()
-			.stream()
-			.map(e -> killCount.getScore(e))
-			.forEach(s -> s.setScore(0));
+			resetScores();
 			populateTeams();
 			return true;
 		}
 		return false;
+	}
+
+	private void resetScores() {
+		Objective killCount = board.getObjective(HvOPlugin.KILLCOUNT);
+
+		board.getEntries()
+		.stream()
+		.map(e -> killCount.getScore(e))
+		.forEach(s -> s.setScore(0));
 	}
 	private void populateTeams() {
 		Team orcs = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_ORCS), "Orc team missing");
