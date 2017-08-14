@@ -20,9 +20,11 @@ import net.md_5.bungee.api.ChatColor;
 
 public class StartGame implements CommandExecutor {
 	private Scoreboard board;
+
 	public StartGame(Scoreboard board){
 		this.board = board;
 	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player){
@@ -54,19 +56,22 @@ public class StartGame implements CommandExecutor {
 		}
 		List<String> entries = new ArrayList<>(board.getEntries());
 		int half = entries.size() / 2;
+
 		for (int c = 0; c < half; c++) {
 			int num = random.nextInt(entries.size());
 			String entry = entries.remove(num);
 			team1.addEntry(entry);
 		}
-		for (String entry:entries){
-			team2.addEntry(entry);
-		}
-		String message = String.format("%sTeam %s: %s", ChatColor.AQUA, human.getName(),
-				human.getEntries().stream().collect(Collectors.joining(", ")));
-		Bukkit.broadcastMessage(message);
-		message = String.format("%sTeam %s: %s", ChatColor.DARK_RED, orc.getName(),
-				orc.getEntries().stream().collect(Collectors.joining(", ")));
+
+		entries.forEach(team2::addEntry);
+		broadcastTeam(ChatColor.AQUA, human);
+		broadcastTeam(ChatColor.DARK_RED, orc);
+	}
+
+	private void broadcastTeam(ChatColor color, Team team) {
+		String message = String.format("%sTeam %s: %s", color, team.getName(),
+					team.getEntries().stream()
+							 .collect(Collectors.joining(", ")));
 		Bukkit.broadcastMessage(message);
 	}
 }
