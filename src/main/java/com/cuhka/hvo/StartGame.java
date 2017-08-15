@@ -48,9 +48,16 @@ public class StartGame implements CommandExecutor {
 		Team humans = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_HUMANS), "Humans team missing");
 		Random random = new Random();
 
-		boolean coin = random.nextBoolean();
-		Team team1 = coin ? orcs : humans;
-		Team team2 = coin ? humans : orcs;
+		Team team1;
+		Team team2;
+
+		if (random.nextBoolean()) {
+			team1 = orcs;
+			team2 = humans;
+		} else {
+			team1 = humans;
+			team2 = orcs;
+		}
 		
 		List<String> entries = new ArrayList<>(board.getEntries());
 		entries.removeIf(name -> server.getPlayer(name) == null);
