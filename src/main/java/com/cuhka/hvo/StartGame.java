@@ -59,8 +59,9 @@ public class StartGame implements CommandExecutor {
 			team2 = orcs;
 		}
 		
-		List<String> entries = new ArrayList<>(board.getEntries());
-		entries.removeIf(name -> server.getPlayer(name) == null);
+		List<String> entries  = server.getOnlinePlayers().stream()
+			.map(Player::getName)
+			.collect(Collectors.toCollection(ArrayList::new));
 		
 		int half = entries.size() / 2;
 
