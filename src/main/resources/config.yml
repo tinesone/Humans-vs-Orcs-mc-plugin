@@ -1,0 +1,8 @@
+# config HvO
+humans:
+  spawncords: 2054, 74, 282
+  zombiecords: 6, 5, 4
+orcs:
+  spawncords: 1334, 73, 292
+  zombiecords: 4, 5, 6
+  
