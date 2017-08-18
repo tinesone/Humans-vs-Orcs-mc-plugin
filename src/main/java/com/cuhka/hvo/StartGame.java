@@ -2,15 +2,20 @@ package com.cuhka.hvo;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -19,10 +24,12 @@ import org.bukkit.scoreboard.Team;
 public class StartGame implements CommandExecutor {
 	private Scoreboard board;
 	private Server server;
-	
-	public StartGame(Server server, Scoreboard board){
+	private Configuration config;
+
+	public StartGame(Server server, Scoreboard board, Configuration config){
 		this.server = server;
 		this.board = board;
+		this.config = config;
 	}
 
 	@Override
@@ -58,11 +65,11 @@ public class StartGame implements CommandExecutor {
 			team1 = humans;
 			team2 = orcs;
 		}
-		
+
 		List<String> entries  = server.getOnlinePlayers().stream()
-			.map(Player::getName)
-			.collect(Collectors.toCollection(ArrayList::new));
-		
+				.map(Player::getName)
+				.collect(Collectors.toCollection(ArrayList::new));
+
 		int half = entries.size() / 2;
 
 		for (int c = 0; c < half; c++) {
@@ -74,14 +81,36 @@ public class StartGame implements CommandExecutor {
 		entries.forEach(team2::addEntry);
 		broadcastTeam(humans);
 		broadcastTeam(orcs);
+		teleportTeam(orcs);
+		teleportTeam(humans);
+
 	}
+
 
 	private void broadcastTeam(Team team) {
 		String message = String.format("%sTeam %s: %s", team.getColor(), team.getName(),
-					team.getEntries().stream()
-							 .collect(Collectors.joining(", ")));
+				team.getEntries().stream()
+				.collect(Collectors.joining(", ")));
 		server.broadcastMessage(message);
 	}
+
+	private Location parseLocation(String value) {
+		String[] parts = value.split("\\s*,\\s*");
+		double x = Double.parseDouble(parts[0]);
+		double y = Double.parseDouble(parts[1]);
+		double z = Double.parseDouble(parts[2]);
+		return new Location (server.getWorld("level"), x, y, z);
+	}
+	
+	private void teleportTeam(Team team){
+		String rawCoords = config.getString(team.getName().toLowerCase() + ".spawncords");
+		Location coords = parseLocation(rawCoords);
+		System.out.println(coords);
+		team.getEntries().stream()
+		.map(name -> server.getPlayer(name))
+		.forEach(player -> player.teleport(coords));
+	}
+
 }
 
 
