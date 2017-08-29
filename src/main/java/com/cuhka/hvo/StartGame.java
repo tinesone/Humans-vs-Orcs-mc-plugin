@@ -18,7 +18,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -49,9 +51,14 @@ public class StartGame implements CommandExecutor {
 			resetScores();
 			populateTeams();
 			refillStarterItems();
+			clearZombies();
 			return true;
 		}
 		return false;
+	}
+
+private void clearZombies() {
+		server.getWorld("level").getEntitiesByClasses(Zombie.class).forEach(Entity -> Entity.remove());
 	}
 
 	private void refillStarterItems() {
