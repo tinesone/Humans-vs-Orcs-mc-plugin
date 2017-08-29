@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,9 +37,11 @@ public class StartGame implements CommandExecutor {
 	private Configuration config;
 	private Team orcs;
 	private Team humans;
+	private World world;
 
-	public StartGame(Server server, Scoreboard board, Configuration config){
+	public StartGame(Server server, World world, Scoreboard board, Configuration config){
 		this.server = server;
+		this.world = world;
 		this.board = board;
 		this.config = config;
 	}
@@ -58,7 +61,7 @@ public class StartGame implements CommandExecutor {
 	}
 
 private void clearZombies() {
-		server.getWorld("level").getEntitiesByClasses(Zombie.class).forEach(Entity -> Entity.remove());
+		world.getEntitiesByClasses(Zombie.class).forEach(Entity -> Entity.remove());
 	}
 
 	private void refillStarterItems() {
@@ -158,7 +161,7 @@ private void clearZombies() {
 		double x = Double.parseDouble(parts[0]);
 		double y = Double.parseDouble(parts[1]);
 		double z = Double.parseDouble(parts[2]);
-		return new Location (server.getWorld("level"), x, y, z);
+		return new Location (world, x, y, z);
 	}
 	
 	private void teleportTeam(Team team){
