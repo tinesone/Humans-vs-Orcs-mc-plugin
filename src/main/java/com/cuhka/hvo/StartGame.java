@@ -22,6 +22,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -65,6 +67,8 @@ public class StartGame implements CommandExecutor {
 	private void refillHumanItems(Player player) {
 		PlayerInventory inventory = player.getInventory();
 		
+		player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 600, 200));
+		
 		inventory.clear();
 		ItemStack sword = new ItemStack(Material.GOLD_SWORD);
 		ItemMeta meta = sword.getItemMeta();
@@ -78,6 +82,8 @@ public class StartGame implements CommandExecutor {
 
 	private void refillOrcItems(Player player) {
 		PlayerInventory inventory = player.getInventory();
+		
+		player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 600, 200));
 		
 		inventory.clear();
 		ItemStack sword = new ItemStack(Material.GOLD_SWORD, 1);
