@@ -24,6 +24,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
@@ -37,12 +38,14 @@ public class StartGame implements CommandExecutor {
 	private Team orcs;
 	private Team humans;
 	private World world;
+	private Plugin plugin;
 
-	public StartGame(Server server, World world, Scoreboard board, Configuration config){
+	public StartGame(Plugin plugin, Server server, World world, Scoreboard board, Configuration config){
 		this.server = server;
 		this.world = world;
 		this.board = board;
-		this.config = config;
+		this.config = Objects.requireNonNull(config, "config");
+		this.plugin = Objects.requireNonNull(plugin, "plugin");
 	}
 
 	@Override
@@ -54,9 +57,19 @@ public class StartGame implements CommandExecutor {
 			populateTeams();
 			refillStarterItems();
 			clearZombies();
+			startGrinder(humans);
+			startGrinder(orcs);
 			return true;
 		}
 		return false;
+	}
+
+private void startGrinder(Team team) {
+		String rawCoords = config.getString(team.getName().toLowerCase() + ".zombiecords");
+		Location coords = parseLocation(rawCoords);
+		ZombieGrinder grinder = new ZombieGrinder(world, coords, team, plugin);
+		int delay = config.getInt("zombiedelay", 5) * 20;
+		grinder.runTaskTimer(plugin, 100, delay);
 	}
 
 private void clearZombies() {
@@ -114,6 +127,8 @@ private void clearZombies() {
 		.forEach(s -> s.setScore(0));
 	}
 	private void populateTeams() {
+		orcs.getEntries().stream().forEach(orcs::removeEntry);
+		humans.getEntries().stream().forEach(humans::removeEntry);
 		Random random = new Random();
 
 		Team team1;

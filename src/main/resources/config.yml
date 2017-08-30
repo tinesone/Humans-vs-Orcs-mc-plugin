@@ -1,8 +1,11 @@
 # config HvO
 humans:
-  spawncords: 2054, 74, 282
-  zombiecords: 6, 5, 4
+  spawncords: 2055.5, 75, 282
+  zombiecords: 1295, 64, 292
 orcs:
   spawncords: 1334, 73, 292
-  zombiecords: 4, 5, 6
+  zombiecords: 1315, 60, 292
+#How long it takes to spawn in zombies,
+zombiedelay: 5
+  
   
