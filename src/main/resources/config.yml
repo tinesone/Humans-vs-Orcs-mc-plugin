@@ -2,10 +2,12 @@
 humans:
   spawncords: 2055.5, 75, 282
   zombiecords: 1295, 64, 292
+  villager: 1316, 60, 292
 orcs:
   spawncords: 1334, 73, 292
   zombiecords: 1315, 60, 292
-#How long it takes to spawn in zombies,
+  villager: 1315, 60, 292
+#How long it takes to spawn in zombies
 zombiedelay: 5
   
   

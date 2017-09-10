@@ -2,12 +2,10 @@ package com.cuhka.hvo;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
@@ -19,9 +17,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -56,24 +58,36 @@ public class StartGame implements CommandExecutor {
 			resetScores();
 			populateTeams();
 			refillStarterItems();
-			clearZombies();
+			clearActors();
 			startGrinder(humans);
 			startGrinder(orcs);
+			spawnVillager(orcs);
+			spawnVillager(humans);
 			return true;
 		}
 		return false;
 	}
 
+private void spawnVillager(Team team) {
+		
+		Location coords = getLocation(team, "villager");
+		Villager merchant = (Villager) world.spawnEntity(coords, EntityType.VILLAGER);
+		MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.IRON_SWORD, 1), Integer.MAX_VALUE);
+		recipe.addIngredient(new ItemStack(Material.GOLD_NUGGET, 3));
+		recipe.addIngredient(new ItemStack(Material.EMERALD, 1));
+		merchant.setRecipes(Collections.singletonList(recipe));
+		
+	}
+
 private void startGrinder(Team team) {
-		String rawCoords = config.getString(team.getName().toLowerCase() + ".zombiecords");
-		Location coords = parseLocation(rawCoords);
+		Location coords = getLocation(team, "zombiecords");
 		ZombieGrinder grinder = new ZombieGrinder(world, coords, team, plugin);
 		int delay = config.getInt("zombiedelay", 5) * 20;
 		grinder.runTaskTimer(plugin, 100, delay);
 	}
 
-private void clearZombies() {
-		world.getEntitiesByClasses(Zombie.class).forEach(Entity -> Entity.remove());
+private void clearActors() {
+		world.getEntitiesByClasses(Zombie.class, Villager.class).forEach(Entity::remove);
 	}
 
 	private void refillStarterItems() {
@@ -94,7 +108,7 @@ private void clearZombies() {
 		inventory.clear();
 		ItemStack sword = new ItemStack(Material.GOLD_SWORD);
 		ItemMeta meta = sword.getItemMeta();
-		meta.setDisplayName(ChatColor.RESET + "Fine Crafted Sword");
+		meta.setDisplayName(ChatColor.RESET + "Fine Sword");
 		sword.setItemMeta(meta);
 		inventory.addItem(
 				sword, 
@@ -170,6 +184,11 @@ private void clearZombies() {
 		server.broadcastMessage(message);
 	}
 
+	private Location getLocation(Team team, String subkey) {
+		String raw = config.getString(team.getName().toLowerCase() + "." + subkey);
+		return parseLocation(raw);
+	}
+	
 	private Location parseLocation(String value) {
 		String[] parts = value.split("\\s*,\\s*");
 		double x = Double.parseDouble(parts[0]);
@@ -179,8 +198,8 @@ private void clearZombies() {
 	}
 	
 	private void teleportTeam(Team team){
-		String rawCoords = config.getString(team.getName().toLowerCase() + ".spawncords");
-		Location coords = parseLocation(rawCoords);
+		Location coords = getLocation(team, "spawncords");
+
 		team.getEntries().stream()
 		.map(name -> server.getPlayer(name))
 		.forEach(player -> player.teleport(coords));
