@@ -53,74 +53,80 @@ public class StartGame implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player){
-			orcs = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_ORCS), "Orc team missing");
-			humans = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_HUMANS), "Humans team missing");
-			resetScores();
-			populateTeams();
-			refillStarterItems();
-			clearActors();
-			startGrinder(humans);
-			startGrinder(orcs);
-			spawnVillager(orcs);
-			spawnVillager(humans);
+			startGame();
 			return true;
 		}
+
 		return false;
 	}
 
-private void spawnVillager(Team team) {
-		
+	private void startGame() {
+		orcs = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_ORCS), "Orc team missing");
+		humans = Objects.requireNonNull(board.getTeam(HvOPlugin.TEAM_HUMANS), "Humans team missing");
+		resetScores();
+		populateTeams();
+		refillStarterItems();
+		clearActors();
+		startGrinder(humans);
+		startGrinder(orcs);
+		spawnVillager(orcs);
+		spawnVillager(humans);
+	}
+
+	private void spawnVillager(Team team) {
 		Location coords = getLocation(team, "villager");
 		Villager merchant = (Villager) world.spawnEntity(coords, EntityType.VILLAGER);
 		MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.IRON_SWORD, 1), Integer.MAX_VALUE);
 		recipe.addIngredient(new ItemStack(Material.GOLD_NUGGET, 3));
 		recipe.addIngredient(new ItemStack(Material.EMERALD, 1));
 		merchant.setRecipes(Collections.singletonList(recipe));
-		
+
 	}
 
-private void startGrinder(Team team) {
+	private void startGrinder(Team team) {
 		Location coords = getLocation(team, "zombiecords");
 		ZombieGrinder grinder = new ZombieGrinder(world, coords, team, plugin);
+		
 		int delay = config.getInt("zombiedelay", 5) * 20;
 		grinder.runTaskTimer(plugin, 100, delay);
 	}
 
-private void clearActors() {
+	private void clearActors() {
 		world.getEntitiesByClasses(Zombie.class, Villager.class).forEach(Entity::remove);
 	}
 
 	private void refillStarterItems() {
 		orcs.getEntries().stream()
-			.map(name -> server.getPlayer(name))
+			.map(server::getPlayer)
 			.forEach(player -> refillOrcItems(player));
-		
+
 		humans.getEntries().stream()
-			.map(name -> server.getPlayer(name))
+			.map(server::getPlayer)
 			.forEach(player -> refillHumanItems(player));
 	}
 
 	private void refillHumanItems(Player player) {
 		PlayerInventory inventory = player.getInventory();
-		
+
 		player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 600, 200));
-		
+
 		inventory.clear();
 		ItemStack sword = new ItemStack(Material.GOLD_SWORD);
 		ItemMeta meta = sword.getItemMeta();
 		meta.setDisplayName(ChatColor.RESET + "Fine Sword");
 		sword.setItemMeta(meta);
+		
 		inventory.addItem(
 				sword, 
 				new ItemStack(Material.BOAT, 1),
-			    new ItemStack(Material.COOKED_CHICKEN, 3));
+				new ItemStack(Material.COOKED_CHICKEN, 3));
 	}
 
 	private void refillOrcItems(Player player) {
 		PlayerInventory inventory = player.getInventory();
-		
+
 		player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 600, 200));
-		
+
 		inventory.clear();
 		ItemStack sword = new ItemStack(Material.GOLD_SWORD, 1);
 		ItemMeta meta = sword.getItemMeta();
@@ -129,20 +135,19 @@ private void clearActors() {
 		inventory.addItem(
 				sword, 
 				new ItemStack(Material.BOAT, 1),
-			    new ItemStack(Material.COOKED_CHICKEN, 3));
+				new ItemStack(Material.COOKED_CHICKEN, 3));
 	}
 
 	private void resetScores() {
 		Objective killCount = board.getObjective(HvOPlugin.KILLCOUNT);
 
-		board.getEntries()
-		.stream()
-		.map(e -> killCount.getScore(e))
-		.forEach(s -> s.setScore(0));
+		board.getEntries().stream()
+			.map(e -> killCount.getScore(e))
+			.forEach(s -> s.setScore(0));
 	}
 	private void populateTeams() {
-		orcs.getEntries().stream().forEach(orcs::removeEntry);
-		humans.getEntries().stream().forEach(humans::removeEntry);
+		orcs.getEntries().forEach(orcs::removeEntry);
+		humans.getEntries().forEach(humans::removeEntry);
 		Random random = new Random();
 
 		Team team1;
@@ -173,7 +178,6 @@ private void clearActors() {
 		broadcastTeam(orcs);
 		teleportTeam(orcs);
 		teleportTeam(humans);
-
 	}
 
 
@@ -185,24 +189,22 @@ private void clearActors() {
 	}
 
 	private Location getLocation(Team team, String subkey) {
-		String raw = config.getString(team.getName().toLowerCase() + "." + subkey);
-		return parseLocation(raw);
-	}
-	
-	private Location parseLocation(String value) {
+		String path = team.getName().toLowerCase() + "." + subkey;
+		String value = Objects.requireNonNull(config.getString(path), () -> "No location value at " + path);
+
 		String[] parts = value.split("\\s*,\\s*");
 		double x = Double.parseDouble(parts[0]);
 		double y = Double.parseDouble(parts[1]);
 		double z = Double.parseDouble(parts[2]);
 		return new Location (world, x, y, z);
 	}
-	
+
 	private void teleportTeam(Team team){
 		Location coords = getLocation(team, "spawncords");
 
 		team.getEntries().stream()
-		.map(name -> server.getPlayer(name))
-		.forEach(player -> player.teleport(coords));
+			.map(server::getPlayer)
+			.forEach(player -> player.teleport(coords));
 	}
 
 }
